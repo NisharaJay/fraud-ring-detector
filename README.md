@@ -13,10 +13,10 @@ A Graph-based ML pipeline for fraud detection in transaction networks that uses 
 - Performs train/validation/test split and evaluates with dynamic thresholds
 - Detects fraud rings from predicted fraudulent nodes
 - Provides analysis:
-    Number of detected fraud rings
-    Ring sizes (min, max, average)
-    False positives and false negatives
-    Visualizes detected fraud rings
+    - Number of detected fraud rings
+    - Ring sizes (min, max, average)
+    - False positives and false negatives
+    - Visualizes detected fraud rings
 
 ### Technologies Used
 - Python
