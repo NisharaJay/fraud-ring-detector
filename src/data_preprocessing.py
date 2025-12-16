@@ -6,25 +6,24 @@ fake = Faker()
 
 num_accounts = 1000
 num_transactions = 5000
-num_fraud_rings = 5
-fraud_ring_size = 6
-fraud_tx_per_ring = 200
+num_fraud_rings = 10       # increased number of fraud rings
+fraud_ring_size = 10        # more accounts per ring
+fraud_tx_per_ring = 150     # fewer per ring to avoid dominance
 
-
-#Create accounts
+# Create accounts
 accounts = [fake.uuid4() for _ in range(num_accounts)]
 
 transactions = []
 
-#Normal transactions
+# Normal transactions
 for _ in range(num_transactions):
     src = random.choice(accounts)
     dst = random.choice(accounts)
-    amount = random.uniform(10, 500)
-    transactions.append([src, dst, amount, 0])  # 0 = non-fraud
+    if src != dst:
+        amount = random.uniform(10, 500)
+        transactions.append([src, dst, amount, 0])  # 0 = non-fraud
 
-
-#Create fraud rings
+# Create fraud rings
 fraud_accounts = set()
 
 for ring_id in range(num_fraud_rings):
@@ -35,9 +34,11 @@ for ring_id in range(num_fraud_rings):
         src = random.choice(ring)
         dst = random.choice(ring)
         if src != dst:
-            amount = random.uniform(700, 2000)  # higher amounts
+            amount = random.uniform(700, 2000)  # higher amounts for fraud
             transactions.append([src, dst, amount, 1])  # 1 = fraud
 
+# Shuffle transactions
+random.shuffle(transactions)
 
 df = pd.DataFrame(
     transactions,
