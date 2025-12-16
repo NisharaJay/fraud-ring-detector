@@ -6,9 +6,9 @@ fake = Faker()
 
 num_accounts = 1000
 num_transactions = 5000
-num_fraud_rings = 10       # increased number of fraud rings
-fraud_ring_size = 10        # more accounts per ring
-fraud_tx_per_ring = 150     # fewer per ring to avoid dominance
+num_fraud_rings = 10       
+fraud_ring_size = 10      
+fraud_tx_per_ring = 150     
 
 # Create accounts
 accounts = [fake.uuid4() for _ in range(num_accounts)]
@@ -34,7 +34,7 @@ for ring_id in range(num_fraud_rings):
         src = random.choice(ring)
         dst = random.choice(ring)
         if src != dst:
-            amount = random.uniform(700, 2000)  # higher amounts for fraud
+            amount = random.uniform(700, 2000) 
             transactions.append([src, dst, amount, 1])  # 1 = fraud
 
 # Shuffle transactions
