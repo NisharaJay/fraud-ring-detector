@@ -8,34 +8,29 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-# -----------------------------
+
 # Load graph
-# -----------------------------
 with open("data/processed/transaction_graph.pkl", "rb") as f:
     G = pickle.load(f)
 
-# -----------------------------
+
 # Load node features
-# -----------------------------
 df_features = pd.read_csv("data/processed/node_features.csv", index_col=0)
 X = torch.tensor(df_features.values, dtype=torch.float)
 
-# -----------------------------
+
 # Map nodes to integers & edges
-# -----------------------------
 node_mapping = {node: i for i, node in enumerate(G.nodes())}
 edges = [(node_mapping[u], node_mapping[v]) for u, v in G.edges()]
 edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
 
-# -----------------------------
+
 # Node labels
-# -----------------------------
 df_labels = pd.read_csv("data/processed/node_labels.csv", index_col=0)
 y = torch.tensor(df_labels["label"].values, dtype=torch.float)
 
-# -----------------------------
+
 # Train/validation/test split
-# -----------------------------
 nodes = torch.arange(len(y))
 train_nodes, temp_nodes = train_test_split(nodes, test_size=0.3, random_state=42, stratify=y)
 val_nodes, test_nodes = train_test_split(temp_nodes, test_size=0.5, random_state=42, stratify=y[temp_nodes])
@@ -49,17 +44,15 @@ val_mask[val_nodes] = True
 test_mask = torch.zeros(len(y), dtype=torch.bool)
 test_mask[test_nodes] = True
 
-# -----------------------------
+
 # PyG Data object
-# -----------------------------
 data = Data(x=X, edge_index=edge_index, y=y)
 data.train_mask = train_mask
 data.val_mask = val_mask
 data.test_mask = test_mask
 
-# -----------------------------
+
 # GraphSAGE model
-# -----------------------------
 class GraphSAGE(torch.nn.Module):
     def __init__(self, in_channels, hidden_channels=16, dropout=0.6):
         super(GraphSAGE, self).__init__()
@@ -77,9 +70,8 @@ class GraphSAGE(torch.nn.Module):
 model = GraphSAGE(data.num_node_features)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
-# -----------------------------
+
 # Focal loss for imbalance
-# -----------------------------
 class FocalLoss(torch.nn.Module):
     def __init__(self, alpha=0.25, gamma=2):
         super().__init__()
@@ -95,9 +87,8 @@ class FocalLoss(torch.nn.Module):
 
 criterion = FocalLoss()
 
-# -----------------------------
+
 # Training loop with early stopping
-# -----------------------------
 epochs = 100
 patience = 10
 no_improve = 0
@@ -145,9 +136,8 @@ for epoch in range(epochs):
         print(f"Early stopping at epoch {epoch}")
         break
 
-# -----------------------------
+
 # Save threshold
-# -----------------------------
 with open("models/threshold.txt", "w") as f:
     f.write(str(best_threshold))
 
