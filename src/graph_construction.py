@@ -10,8 +10,8 @@ G = nx.from_pandas_edgelist(
     df, 
     'from_account', 
     'to_account', 
-    edge_attr=['amount'], 
-    create_using=nx.DiGraph() #overwrites previous amount
+    edge_attr=['amount', 'is_fraud'],
+    create_using=nx.MultiDiGraph()
 )
 
 with open('data/processed/transaction_graph.pkl', 'wb') as f:
